@@ -1,4 +1,4 @@
-use blame_rs::DiffAlgorithm::Patience;
+use blame_rs::DiffAlgorithm::{Myers, Patience};
 use blame_rs::{BlameOptions, BlameRevision, blame_with_options};
 use std::fs;
 use std::rc::Rc;
