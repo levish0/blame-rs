@@ -127,20 +127,6 @@ for line in result.lines() {
 }
 ```
 
-### Git Equivalent
-
-This Rust code:
-```rust
-let result = blame(&revisions)?;
-```
-
-Provides similar functionality to:
-```bash
-git blame <file>
-```
-
-But with the flexibility to work directly on in-memory text content and custom revision metadata.
-
 ---
 
 ## 🔍 How It Works
