@@ -1,0 +1,19 @@
+[package]
+name = "blame-rs"
+version = "0.1.0"
+description = "Git-style blame/annotate algorithm for revisioned text content"
+authors = [
+    "Levi Lim <shiueo.csh@gmail.com>",
+]
+license = "MIT"
+repository = "https://github.com/levish0/blame-rs"
+homepage = "https://github.com/levish0/blame-rs"
+documentation = "https://docs.rs/blame"
+readme = "README.md"
+keywords = ["blame", "annotate", "diff", "revision", "git"]
+categories = ["text-processing", "algorithms", "development-tools"]
+edition = "2024"
+rust-version = "1.88.0"
+
+[dependencies]
+similar = "2.7.0"
