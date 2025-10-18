@@ -17,7 +17,7 @@ Line-by-line authorship tracking for revisioned text using proven diff algorithm
 ## 🌟 Overview
 
 `blame-rs` is a Rust library for **Git-style blame/annotate** operations on text content.
-It determines which revision introduced each line in a document by analyzing a sequence of revisions, providing the same line attribution behavior as `git blame` but with a flexible in-memory API perfect for applications that need to track authorship programmatically.
+Track which revision introduced each line in your documents with a flexible in-memory API.
 
 ---
 
@@ -27,7 +27,6 @@ It determines which revision introduced each line in a document by analyzing a s
 - **Multiple diff algorithms**: Support for Myers (default) and Patience algorithms via the `similar` crate
 - **Forward tracking**: Efficiently traces line origins from oldest to newest revision
 - **Memory efficient**: Zero-copy line tracking with minimal allocations
-- **Type safe**: Leverages Rust's type system for compile-time guarantees
 - **Well tested**: Comprehensive test suite with fixture-based scenarios
 
 ### Supported Diff Algorithms
