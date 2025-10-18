@@ -1,6 +1,7 @@
 fn main() {
     println!("Hello, world!");
-    println!("Charlie did this");
     println!("Bob did this");
-    println!("Charlie did this");
+}
+fn main() {
+    println!("Hello, world!");
 }
