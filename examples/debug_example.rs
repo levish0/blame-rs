@@ -1,7 +1,8 @@
 use blame_rs::{BlameRevision, blame};
 use std::fs;
+use std::rc::Rc;
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 struct CommitInfo {
     hash: String,
     author: String,
@@ -24,24 +25,24 @@ fn main() {
     let revisions = vec![
         BlameRevision {
             content: &rev0,
-            metadata: CommitInfo {
+            metadata: Rc::new(CommitInfo {
                 hash: "abc123".to_string(),
                 author: "Alice".to_string(),
-            },
+            }),
         },
         BlameRevision {
             content: &rev1,
-            metadata: CommitInfo {
+            metadata: Rc::new(CommitInfo {
                 hash: "def456".to_string(),
                 author: "Bob".to_string(),
-            },
+            }),
         },
         BlameRevision {
             content: &rev2,
-            metadata: CommitInfo {
+            metadata: Rc::new(CommitInfo {
                 hash: "789abc".to_string(),
                 author: "Charlie".to_string(),
-            },
+            }),
         },
     ];
 

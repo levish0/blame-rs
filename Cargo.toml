@@ -1,6 +1,6 @@
 [package]
 name = "blame-rs"
-version = "0.1.2"
+version = "0.1.3"
 description = "Line-by-line authorship tracking for revisioned text"
 authors = [
     "Levi Lim <shiueo.csh@gmail.com>",

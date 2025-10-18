@@ -3,7 +3,7 @@ use std::rc::Rc;
 #[derive(Debug, Clone)]
 pub struct BlameRevision<'a, T> {
     pub content: &'a str,
-    pub metadata: T,
+    pub metadata: Rc<T>,
 }
 
 #[derive(Debug, Clone)]

@@ -4,10 +4,19 @@ use crate::types::{
 use similar::{Algorithm, ChangeTag, TextDiff};
 use std::rc::Rc;
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 struct LineOrigin<'a, T> {
     content: &'a str,
     metadata: Rc<T>,
+}
+
+impl<'a, T> Clone for LineOrigin<'a, T> {
+    fn clone(&self) -> Self {
+        Self {
+            content: self.content,
+            metadata: Rc::clone(&self.metadata),
+        }
+    }
 }
 
 /// Performs a blame operation on a sequence of revisions to determine the origin of each line.
@@ -32,8 +41,9 @@ struct LineOrigin<'a, T> {
 ///
 /// ```ignore
 /// use blame_rs::{blame, BlameRevision};
+/// use std::rc::Rc;
 ///
-/// #[derive(Clone, Debug)]
+/// #[derive(Debug)]
 /// struct CommitInfo {
 ///     hash: String,
 ///     author: String,
@@ -42,17 +52,17 @@ struct LineOrigin<'a, T> {
 /// let revisions = vec![
 ///     BlameRevision {
 ///         content: "line 1\nline 2",
-///         metadata: CommitInfo { hash: "abc123".into(), author: "Alice".into() },
+///         metadata: Rc::new(CommitInfo { hash: "abc123".into(), author: "Alice".into() }),
 ///     },
 ///     BlameRevision {
 ///         content: "line 1\nline 2\nline 3",
-///         metadata: CommitInfo { hash: "def456".into(), author: "Bob".into() },
+///         metadata: Rc::new(CommitInfo { hash: "def456".into(), author: "Bob".into() }),
 ///     },
 /// ];
 ///
 /// let result = blame(&revisions)?;
 /// ```
-pub fn blame<'a, T: Clone>(revisions: &'a [BlameRevision<'a, T>]) -> Result<BlameResult<'a, T>, BlameError> {
+pub fn blame<'a, T>(revisions: &'a [BlameRevision<'a, T>]) -> Result<BlameResult<'a, T>, BlameError> {
     blame_with_options(revisions, BlameOptions::default())
 }
 
@@ -83,7 +93,7 @@ pub fn blame<'a, T: Clone>(revisions: &'a [BlameRevision<'a, T>]) -> Result<Blam
 ///
 /// let result = blame_with_options(&revisions, options)?;
 /// ```
-pub fn blame_with_options<'a, T: Clone>(
+pub fn blame_with_options<'a, T>(
     revisions: &'a [BlameRevision<'a, T>],
     options: BlameOptions,
 ) -> Result<BlameResult<'a, T>, BlameError> {
@@ -107,7 +117,7 @@ pub fn blame_with_options<'a, T: Clone>(
     let mut line_origins: Vec<LineOrigin<'a, T>> = Vec::with_capacity(estimated_lines);
 
     // Create shared reference to first revision's metadata
-    let first_metadata = Rc::new(first_revision.metadata.clone());
+    let first_metadata = Rc::clone(&first_revision.metadata);
 
     for change in init_diff.iter_all_changes() {
         if change.tag() == ChangeTag::Insert {
@@ -124,7 +134,7 @@ pub fn blame_with_options<'a, T: Clone>(
         let new_content = revisions[i + 1].content;
 
         // Create shared reference to this revision's metadata
-        let shared_metadata = Rc::new(revisions[i + 1].metadata.clone());
+        let shared_metadata = Rc::clone(&revisions[i + 1].metadata);
 
         let diff = TextDiff::configure()
             .algorithm(similar_algorithm)

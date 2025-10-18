@@ -2,8 +2,9 @@ use blame_rs::{BlameOptions, BlameRevision, DiffAlgorithm, blame_with_options};
 use serde::Deserialize;
 use std::fs;
 use std::path::Path;
+use std::rc::Rc;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, PartialEq)]
 struct TestMetadata {
     revision: usize,
 }
@@ -48,7 +49,7 @@ fn run_fixture_test(fixture_dir: &str, algorithm: DiffAlgorithm) {
         .enumerate()
         .map(|(idx, content)| BlameRevision {
             content: content.as_str(),
-            metadata: TestMetadata { revision: idx },
+            metadata: Rc::new(TestMetadata { revision: idx }),
         })
         .collect();
 

@@ -61,8 +61,9 @@ blame-rs = "0.1.0"
 
 ```rust
 use blame_rs::{blame, BlameRevision};
+use std::rc::Rc;
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 struct CommitInfo {
     hash: String,
     author: String,
@@ -72,17 +73,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let revisions = vec![
         BlameRevision {
             content: "line 1\nline 2",
-            metadata: CommitInfo {
+            metadata: Rc::new(CommitInfo {
                 hash: "abc123".to_string(),
                 author: "Alice".to_string(),
-            },
+            }),
         },
         BlameRevision {
             content: "line 1\nline 2\nline 3",
-            metadata: CommitInfo {
+            metadata: Rc::new(CommitInfo {
                 hash: "def456".to_string(),
                 author: "Bob".to_string(),
-            },
+            }),
         },
     ];
 
@@ -240,7 +241,9 @@ cargo doc --open
 ```
 
 Key types:
-- `BlameRevision<'a, T>`: Represents a revision with content (`&'a str`) and metadata
+- `BlameRevision<'a, T>`: Represents a revision with content (`&'a str`) and metadata (`Rc<T>`)
+  - `content: &'a str` - Zero-copy reference to revision content
+  - `metadata: Rc<T>` - Shared reference-counted metadata (no `T: Clone` required)
 - `BlameLine<'a, T>`: A single line with its origin information
   - `content: &'a str` - Zero-copy reference to the original line
   - `revision_metadata: Rc<T>` - Shared reference to revision metadata
@@ -248,7 +251,7 @@ Key types:
 - `BlameOptions`: Configuration for the blame operation
 - `DiffAlgorithm`: Myers or Patience algorithm selection
 
-**Note**: The library uses zero-copy string slices (`&str`) and shared metadata (`Rc<T>`) for optimal performance.
+**Note**: The library uses zero-copy string slices (`&str`) and shared metadata (`Rc<T>`) for optimal performance. Metadata types don't need to implement `Clone`.
 
 ---
 

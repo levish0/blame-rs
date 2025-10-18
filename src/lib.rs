@@ -18,8 +18,9 @@
 //!
 //! ```rust
 //! use blame_rs::{blame, BlameRevision};
+//! use std::rc::Rc;
 //!
-//! #[derive(Clone, Debug)]
+//! #[derive(Debug)]
 //! struct CommitInfo {
 //!     hash: String,
 //!     author: String,
@@ -28,17 +29,17 @@
 //! let revisions = vec![
 //!     BlameRevision {
 //!         content: "line 1\nline 2",
-//!         metadata: CommitInfo {
+//!         metadata: Rc::new(CommitInfo {
 //!             hash: "abc123".to_string(),
 //!             author: "Alice".to_string(),
-//!         },
+//!         }),
 //!     },
 //!     BlameRevision {
 //!         content: "line 1\nline 2\nline 3",
-//!         metadata: CommitInfo {
+//!         metadata: Rc::new(CommitInfo {
 //!             hash: "def456".to_string(),
 //!             author: "Bob".to_string(),
-//!         },
+//!         }),
 //!     },
 //! ];
 //!
