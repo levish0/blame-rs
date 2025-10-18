@@ -1,8 +1,6 @@
-use std::borrow::Cow;
-
 #[derive(Debug, Clone)]
 pub struct BlameRevision<'a, T> {
-    pub content: Cow<'a, str>,
+    pub content: &'a str,
     pub metadata: T,
 }
 
@@ -20,32 +18,26 @@ pub struct BlameResult<T> {
 }
 
 impl<T> BlameResult<T> {
-    /// Create a new BlameResult from a vector of BlameLine
     pub fn new(lines: Vec<BlameLine<T>>) -> Self {
         Self { lines }
     }
 
-    /// Get all lines in the result
     pub fn lines(&self) -> &[BlameLine<T>] {
         &self.lines
     }
 
-    /// Get a specific line by index
     pub fn get_line(&self, index: usize) -> Option<&BlameLine<T>> {
         self.lines.get(index)
     }
 
-    /// Get the total number of lines
     pub fn len(&self) -> usize {
         self.lines.len()
     }
 
-    /// Check if the result is empty
     pub fn is_empty(&self) -> bool {
         self.lines.is_empty()
     }
 
-    /// Iterate over all lines
     pub fn iter(&self) -> impl Iterator<Item = &BlameLine<T>> {
         self.lines.iter()
     }
@@ -60,7 +52,36 @@ impl<T> IntoIterator for BlameResult<T> {
     }
 }
 
-/// Errors that can occur during blame operations
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DiffAlgorithm {
+    /// Myers diff algorithm (default, used by Git)
+    Myers,
+    /// Patience diff algorithm (better for code reorganization)
+    Patience,
+}
+
+impl Default for DiffAlgorithm {
+    fn default() -> Self {
+        Self::Myers
+    }
+}
+
+/// Options
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct BlameOptions {
+    /// Diff algorithm to use
+    pub algorithm: DiffAlgorithm,
+}
+
+impl Default for BlameOptions {
+    fn default() -> Self {
+        Self {
+            algorithm: DiffAlgorithm::default(),
+        }
+    }
+}
+
+/// Errors
 #[derive(Debug, thiserror::Error)]
 pub enum BlameError {
     /// No revisions were provided
