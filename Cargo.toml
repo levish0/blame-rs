@@ -1,7 +1,7 @@
 [package]
 name = "blame-rs"
 version = "0.1.0"
-description = "Git-style blame/annotate algorithm for revisioned text content"
+description = "Line-by-line authorship tracking for revisioned text"
 authors = [
     "Levi Lim <shiueo.csh@gmail.com>",
 ]
@@ -17,3 +17,4 @@ rust-version = "1.88.0"
 
 [dependencies]
 similar = "2.7.0"
+thiserror = "2.0.17"
