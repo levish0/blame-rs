@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 #[derive(Debug, Clone)]
 pub struct BlameRevision<'a, T> {
     pub content: &'a str,
@@ -5,28 +7,28 @@ pub struct BlameRevision<'a, T> {
 }
 
 #[derive(Debug, Clone)]
-pub struct BlameLine<T> {
+pub struct BlameLine<'a, T> {
     pub line_number: usize,
-    pub content: String,
-    pub revision_metadata: T,
+    pub content: &'a str,
+    pub revision_metadata: Rc<T>,
 }
 
 /// The result of a blame operation, containing all lines with their origin information
 #[derive(Debug, Clone)]
-pub struct BlameResult<T> {
-    lines: Vec<BlameLine<T>>,
+pub struct BlameResult<'a, T> {
+    lines: Vec<BlameLine<'a, T>>,
 }
 
-impl<T> BlameResult<T> {
-    pub fn new(lines: Vec<BlameLine<T>>) -> Self {
+impl<'a, T> BlameResult<'a, T> {
+    pub fn new(lines: Vec<BlameLine<'a, T>>) -> Self {
         Self { lines }
     }
 
-    pub fn lines(&self) -> &[BlameLine<T>] {
+    pub fn lines(&self) -> &[BlameLine<'a, T>] {
         &self.lines
     }
 
-    pub fn get_line(&self, index: usize) -> Option<&BlameLine<T>> {
+    pub fn get_line(&self, index: usize) -> Option<&BlameLine<'a, T>> {
         self.lines.get(index)
     }
 
@@ -38,14 +40,14 @@ impl<T> BlameResult<T> {
         self.lines.is_empty()
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &BlameLine<T>> {
+    pub fn iter(&self) -> impl Iterator<Item = &BlameLine<'a, T>> {
         self.lines.iter()
     }
 }
 
-impl<T> IntoIterator for BlameResult<T> {
-    type Item = BlameLine<T>;
-    type IntoIter = std::vec::IntoIter<BlameLine<T>>;
+impl<'a, T> IntoIterator for BlameResult<'a, T> {
+    type Item = BlameLine<'a, T>;
+    type IntoIter = std::vec::IntoIter<BlameLine<'a, T>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.lines.into_iter()

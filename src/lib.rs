@@ -10,6 +10,9 @@
 //! - **Generic metadata**: Attach any metadata type to revisions (commit hashes, authors, timestamps, etc.)
 //! - **Multiple diff algorithms**: Support for Myers and Patience algorithms via the `similar` crate
 //! - **Forward tracking**: Efficiently traces line origins from oldest to newest revision
+//! - **Zero-copy optimization**: Uses string slices (`&str`) to avoid unnecessary allocations
+//! - **Shared metadata**: Reference-counted metadata sharing reduces memory usage
+//! - **Pre-allocated vectors**: Minimizes heap allocations during processing
 //!
 //! ## Example
 //!

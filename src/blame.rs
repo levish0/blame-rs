@@ -1,12 +1,13 @@
 use crate::types::{
     BlameError, BlameLine, BlameOptions, BlameResult, BlameRevision, DiffAlgorithm,
 };
-use similar::{Algorithm, TextDiff};
+use similar::{Algorithm, ChangeTag, TextDiff};
+use std::rc::Rc;
 
 #[derive(Clone, Debug)]
-struct LineOrigin<T> {
-    content: String,
-    metadata: T,
+struct LineOrigin<'a, T> {
+    content: &'a str,
+    metadata: Rc<T>,
 }
 
 /// Performs a blame operation on a sequence of revisions to determine the origin of each line.
@@ -51,7 +52,7 @@ struct LineOrigin<T> {
 ///
 /// let result = blame(&revisions)?;
 /// ```
-pub fn blame<T: Clone>(revisions: &[BlameRevision<T>]) -> Result<BlameResult<T>, BlameError> {
+pub fn blame<'a, T: Clone>(revisions: &'a [BlameRevision<'a, T>]) -> Result<BlameResult<'a, T>, BlameError> {
     blame_with_options(revisions, BlameOptions::default())
 }
 
@@ -82,10 +83,10 @@ pub fn blame<T: Clone>(revisions: &[BlameRevision<T>]) -> Result<BlameResult<T>,
 ///
 /// let result = blame_with_options(&revisions, options)?;
 /// ```
-pub fn blame_with_options<T: Clone>(
-    revisions: &[BlameRevision<T>],
+pub fn blame_with_options<'a, T: Clone>(
+    revisions: &'a [BlameRevision<'a, T>],
     options: BlameOptions,
-) -> Result<BlameResult<T>, BlameError> {
+) -> Result<BlameResult<'a, T>, BlameError> {
     if revisions.is_empty() {
         return Err(BlameError::EmptyRevisions);
     }
@@ -100,14 +101,19 @@ pub fn blame_with_options<T: Clone>(
     let init_diff = TextDiff::configure()
         .algorithm(similar_algorithm)
         .diff_lines("", first_revision.content);
-    let mut line_origins: Vec<LineOrigin<T>> = Vec::new();
+
+    // Pre-allocate capacity based on estimated line count
+    let estimated_lines = first_revision.content.lines().count();
+    let mut line_origins: Vec<LineOrigin<'a, T>> = Vec::with_capacity(estimated_lines);
+
+    // Create shared reference to first revision's metadata
+    let first_metadata = Rc::new(first_revision.metadata.clone());
 
     for change in init_diff.iter_all_changes() {
-        use similar::ChangeTag;
         if change.tag() == ChangeTag::Insert {
             line_origins.push(LineOrigin {
-                content: change.value().to_string(),
-                metadata: first_revision.metadata.clone(),
+                content: change.value(),
+                metadata: Rc::clone(&first_metadata),
             });
         }
     }
@@ -116,28 +122,33 @@ pub fn blame_with_options<T: Clone>(
     for i in 0..revisions.len() - 1 {
         let old_content = revisions[i].content;
         let new_content = revisions[i + 1].content;
-        let new_metadata = &revisions[i + 1].metadata;
+
+        // Create shared reference to this revision's metadata
+        let shared_metadata = Rc::new(revisions[i + 1].metadata.clone());
 
         let diff = TextDiff::configure()
             .algorithm(similar_algorithm)
             .diff_lines(old_content, new_content);
 
-        let mut new_line_origins: Vec<LineOrigin<T>> = Vec::new();
+        // Pre-allocate based on new content's line count
+        let estimated_new_lines = new_content.lines().count();
+        let mut new_line_origins: Vec<LineOrigin<'a, T>> = Vec::with_capacity(estimated_new_lines);
 
         for change in diff.iter_all_changes() {
-            use similar::ChangeTag;
-
             match change.tag() {
                 ChangeTag::Equal => {
-                    let old_line_num = change.old_index().unwrap();
-                    if let Some(origin) = line_origins.get(old_line_num) {
-                        new_line_origins.push(origin.clone());
-                    }
+                    let old_line_num = change
+                        .old_index()
+                        .expect("Equal change must have old_index");
+                    let origin = line_origins
+                        .get(old_line_num)
+                        .expect("old_index should be within line_origins bounds");
+                    new_line_origins.push(origin.clone());
                 }
                 ChangeTag::Insert => {
                     new_line_origins.push(LineOrigin {
-                        content: change.value().to_string(),
-                        metadata: new_metadata.clone(),
+                        content: change.value(),
+                        metadata: Rc::clone(&shared_metadata),
                     });
                 }
                 ChangeTag::Delete => {}
@@ -147,7 +158,7 @@ pub fn blame_with_options<T: Clone>(
         line_origins = new_line_origins;
     }
 
-    let blame_lines: Vec<BlameLine<T>> = line_origins
+    let blame_lines: Vec<BlameLine<'a, T>> = line_origins
         .into_iter()
         .enumerate()
         .map(|(idx, origin)| BlameLine {

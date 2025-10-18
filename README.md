@@ -26,7 +26,10 @@ Track which revision introduced each line in your documents with a flexible in-m
 - **Generic metadata API**: Attach any metadata type to revisions (commit hashes, authors, timestamps, etc.)
 - **Multiple diff algorithms**: Support for Myers (default) and Patience algorithms via the `similar` crate
 - **Forward tracking**: Efficiently traces line origins from oldest to newest revision
-- **Memory efficient**: Zero-copy line tracking with minimal allocations
+- **High performance**:
+  - Zero-copy line tracking with `&str` references (no string allocations)
+  - Shared metadata via `Rc<T>` (single clone per revision instead of per line)
+  - Pre-allocated vectors (minimal heap reallocations)
 - **Well tested**: Comprehensive test suite with fixture-based scenarios
 
 ### Supported Diff Algorithms
@@ -237,11 +240,15 @@ cargo doc --open
 ```
 
 Key types:
-- `BlameRevision<T>`: Represents a revision with content and metadata
-- `BlameLine<T>`: A single line with its origin information
-- `BlameResult<T>`: Collection of blamed lines
+- `BlameRevision<'a, T>`: Represents a revision with content (`&'a str`) and metadata
+- `BlameLine<'a, T>`: A single line with its origin information
+  - `content: &'a str` - Zero-copy reference to the original line
+  - `revision_metadata: Rc<T>` - Shared reference to revision metadata
+- `BlameResult<'a, T>`: Collection of blamed lines
 - `BlameOptions`: Configuration for the blame operation
 - `DiffAlgorithm`: Myers or Patience algorithm selection
+
+**Note**: The library uses zero-copy string slices (`&str`) and shared metadata (`Rc<T>`) for optimal performance.
 
 ---
 
