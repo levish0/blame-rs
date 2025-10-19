@@ -2,7 +2,7 @@
 //!
 //! A Rust library for line-by-line authorship tracking in revisioned text content.
 //!
-//! This crate provides a Git-style blame/annotate algorithm that determines which revision
+//! This crate provides a blame/annotate algorithm that determines which revision
 //! introduced each line in a document by analyzing a sequence of revisions.
 //!
 //! ## Features

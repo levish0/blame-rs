@@ -56,7 +56,7 @@ impl<'a, T> IntoIterator for BlameResult<'a, T> {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DiffAlgorithm {
-    /// Myers diff algorithm (default, used by Git)
+    /// Myers diff algorithm (default)
     Myers,
     /// Patience diff algorithm (better for code reorganization)
     Patience,
