@@ -1,0 +1,76 @@
+fn main() {
+    prinffn main() {
+             println!("Hello, world!");
+         }
+n main() {fn main() {
+              println!("Hello, world!");
+          }fn main() {
+               prinffn main() {
+                        println!("Hello, world!");
+                    }
+           n main() {fn main() {
+                         println!("Hello, world!");
+                 dependencies = [
+                  "serde",
+                  "serde_json",
+                  "similar",
+                  "thiserror",
+                 ]    }
+[dependencies]
+similar = "2.7.0"
+thiserror = "2.0.17"
+
+[dev-dependencies]
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+[dependencies]
+similar = "2.7.0"
+thiserror = "2.0.17"
+
+[dev-dependencies]
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+
+                       println!("Hello, world!");
+                   }
+           ffn main() {
+                        println!("Hello, world!");
+                    }
+           n main() {
+                       println!("Hello, world!");
+                   }
+           tln!("Hello, world!");
+           }
+
+
+            println!("Hello, world!");
+        }
+ffn main() {
+             println!("Hello, world!");
+         }
+n main() {
+            println!("Hello, world!");
+        }
+tln!("Hello, world!");
+}
+fn main() {
+    println!fn main() {
+                println!("Hello, world!");
+            }
+(fn main() {
+     fn mafn main() {
+             fn main() {
+                 println!("Hello, world!");
+             }
+ println!("Hello, world!");
+          }
+in() {fn main() {
+          println!("Hello, world!");
+      }
+
+         println!("Hello, world!");
+     }
+            println!("Hello, world!");
+             }
+"Hello, world!");
+}

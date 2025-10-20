@@ -1,0 +1,50 @@
+fn main() {fn main() {
+               println!("Hello, world!");
+           }
+fn main() {
+    println!("Hello, world!");
+}
+fn main() {
+    println!("Hello, world!");
+}
+fn main() {
+    prinffn main() {
+             prdependencies = [
+                "serde",
+                "serde_json",
+                "similar",
+                "thiserror",
+               ]intln!("Hello, world!");
+         }
+n main() {fn main() {
+              prindependencies = [
+                   "serde",
+                   "serde_json",
+                   "similar",
+                   "thiserror",
+                  ]tln!("Hello, world!");
+          }
+
+            println!("Hello, world!");
+        }[dependencies]
+         similar = "2.7.0"
+         thiserror = "2.0.17"
+
+         [dev-dependencies]
+         serde = { version = "1.0.228", features = ["derive"] }
+         serde_json = "1.0.145"
+
+ffn main() {
+             println!("Hello, world!");
+         }
+n main() {
+            println!("Hello, world!");
+        }
+tln!("Hello, world!");
+}
+
+    println!fn main() {
+                println!("Hello, world!");
+            }
+("Hello, world!");
+}

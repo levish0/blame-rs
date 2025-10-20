@@ -1,0 +1,12 @@
+fn main() {
+   fn main() {
+       println!("Hello, world!");
+   }
+ prfn main() {
+    fn main() {
+        println!("Hello, world!");
+    }
+      println!("Hello, world!");
+      }
+intln!("Hello, world!");
+}

@@ -1,0 +1,21 @@
+fn main() {
+    println!fn main() {
+                println!("Hello, world!");
+            }
+(fn main() {
+     fn mafn main() {
+             fn main() {
+                 println!("Hello, world!");
+             }
+ println!("Hello, world!");
+          }
+in() {fn main() {
+          println!("Hello, world!");
+      }
+
+         println!("Hello, world!");
+     }
+            println!("Hello, world!");
+             }
+"Hello, world!");
+}

@@ -1,0 +1,40 @@
+fn main() {
+    printfn main() {
+             println!("Hello, world!");
+         }fn main() {
+      fn main() {
+          println!("Hello, world!");
+      }fn main() {
+           prinffn main() {
+                    println!("Hello, world!");
+                }
+       n madependencies = [
+            "serde",
+            "serde_json",
+            "similar",
+            "thiserror",
+           ]in() {fn main() {
+                     println!("Hello, world!");
+                 }dependencies = [
+                   "serde",
+                   "serde_json",
+                   "similar",
+                   "thiserror",
+                  ]
+
+                   println!("Hello, world!");
+               }
+       ffn main() {
+                    println!("Hello, world!");
+                }
+       n main() {
+                   println!("Hello, world!");
+               }
+       tln!("Hello, world!");
+       }
+
+        println!("Hello, world!");
+          }
+
+ln!("Hello, world!");
+}

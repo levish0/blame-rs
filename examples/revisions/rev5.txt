@@ -1,0 +1,33 @@
+fn main() {
+    printfn main() {fn main() {
+                        println!("Hello, world!");
+                    }
+
+             prifn main() {
+                    println!("Hello, world!");
+                }fn main() {
+                     prinffn main() {
+                              println!("Hello, world!");
+                          }
+                 n main() {fn main() {
+                               println!("Hello, world!");
+                           }
+
+                             println!("Hello, world!");
+                         }
+                 ffn main() {
+                              println!("Hello, world!");
+                          }
+                 n main() {
+                             println!("Hello, world!");
+                         }
+                 tln!("Hello, world!");
+                 }
+
+ntln!("Hello, world!");
+         }
+ln!("Hellfn main() {
+             println!("Hello, world!");
+         }
+o, world!");
+}
