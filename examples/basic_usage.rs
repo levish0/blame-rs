@@ -1,4 +1,4 @@
-use blame_rs::DiffAlgorithm::{Myers, Patience};
+use blame_rs::DiffAlgorithm::Patience;
 use blame_rs::{BlameOptions, BlameRevision, blame_with_options};
 use std::fs;
 use std::rc::Rc;
@@ -56,10 +56,7 @@ fn main() {
     // Print results
     println!("Blame Results:");
     println!("{}", "=".repeat(80));
-    println!(
-        "{:<6} {:<10} {:<15} {}",
-        "Line", "Commit", "Author", "Content"
-    );
+    println!("{:<6} {:<10} {:<15} Content", "Line", "Commit", "Author");
     println!("{}", "=".repeat(80));
 
     for line in result.lines() {

@@ -54,33 +54,20 @@ impl<'a, T> IntoIterator for BlameResult<'a, T> {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum DiffAlgorithm {
     /// Myers diff algorithm (default)
+    #[default]
     Myers,
     /// Patience diff algorithm (better for code reorganization)
     Patience,
 }
 
-impl Default for DiffAlgorithm {
-    fn default() -> Self {
-        Self::Myers
-    }
-}
-
 /// Options
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct BlameOptions {
     /// Diff algorithm to use
     pub algorithm: DiffAlgorithm,
-}
-
-impl Default for BlameOptions {
-    fn default() -> Self {
-        Self {
-            algorithm: DiffAlgorithm::default(),
-        }
-    }
 }
 
 /// Errors

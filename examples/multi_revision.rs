@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::collections::hash_map::DefaultHasher;
 use std::fs;
 use std::hash::{Hash, Hasher};
+use std::path::Path;
 use std::rc::Rc;
 use std::time::Instant;
 
@@ -25,6 +26,14 @@ fn generate_commit_hash(author: &str, message: &str, timestamp: &str) -> String 
     format!("{:016x}", hash_value)[..7].to_string()
 }
 
+fn parse_revision_index(path: &Path) -> usize {
+    path.file_stem()
+        .and_then(|stem| stem.to_str())
+        .and_then(|stem| stem.strip_prefix("rev"))
+        .and_then(|num| num.parse::<usize>().ok())
+        .unwrap_or(usize::MAX)
+}
+
 fn main() {
     // Read all revision files from the revisions directory
     let revisions_dir = "examples/revisions";
@@ -41,8 +50,8 @@ fn main() {
         })
         .collect();
 
-    // Sort files by name (rev0.txt, rev1.txt, ...)
-    revision_files.sort();
+    // Sort by numeric revision index (rev2.txt before rev10.txt)
+    revision_files.sort_by_key(|path| parse_revision_index(path));
 
     let num_revisions = revision_files.len();
     println!("Found {} revision files", num_revisions);
@@ -52,16 +61,14 @@ fn main() {
     let contents: Vec<String> = revision_files
         .iter()
         .map(|path| {
-            fs::read_to_string(path)
-                .unwrap_or_else(|_| panic!("Failed to read {}", path.display()))
+            fs::read_to_string(path).unwrap_or_else(|_| panic!("Failed to read {}", path.display()))
         })
         .collect();
 
     // Generate metadata dynamically based on number of files found
     let authors = vec![
-        "Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace",
-        "Henry", "Iris", "Jack", "Kelly", "Liam", "Maria", "Nathan",
-        "Olivia", "Peter", "Quinn", "Rachel", "Steve", "Tina"
+        "Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry", "Iris", "Jack",
+        "Kelly", "Liam", "Maria", "Nathan", "Olivia", "Peter", "Quinn", "Rachel", "Steve", "Tina",
     ];
 
     let message_templates = vec![
@@ -93,10 +100,10 @@ fn main() {
             let message = message_templates[i % message_templates.len()];
             let timestamp = format!(
                 "2024-{:02}-{:02} {:02}:{:02}:00",
-                1 + (i / 4),  // month
-                1 + ((i * 5) % 28),  // day
-                9 + (i % 8),  // hour
-                (i * 15) % 60  // minute
+                1 + (i / 4),        // month
+                1 + ((i * 5) % 28), // day
+                9 + (i % 8),        // hour
+                (i * 15) % 60       // minute
             );
             let hash = generate_commit_hash(author, message, &timestamp);
 
@@ -136,8 +143,8 @@ fn main() {
     println!("╚═══════════════════════════════════════════════════════════════════════════════╝");
     println!();
     println!(
-        "{:<6} {:<10} {:<12} {:<20} {}",
-        "Line", "Commit", "Author", "Timestamp", "Content"
+        "{:<6} {:<10} {:<12} {:<20} Content",
+        "Line", "Commit", "Author", "Timestamp"
     );
     println!("{}", "─".repeat(100));
 
@@ -164,11 +171,7 @@ fn main() {
     for (i, metadata) in commit_metadata.iter().enumerate() {
         println!(
             "Rev {}: {} - {} - {} - \"{}\"",
-            i,
-            metadata.hash,
-            metadata.author,
-            metadata.timestamp,
-            metadata.message
+            i, metadata.hash, metadata.author, metadata.timestamp, metadata.message
         );
     }
 

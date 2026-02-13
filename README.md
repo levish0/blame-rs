@@ -54,7 +54,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-blame-rs = "0.1.0"
+blame-rs = "0.1.8"
 ```
 
 ### Basic Usage
@@ -145,7 +145,8 @@ The algorithm works by:
    - **Insert** → Assign current revision metadata (new line)
    - **Delete** → Remove from tracking (deleted line)
 
-This **forward-tracking approach** ensures accurate line attribution even when lines are moved, modified, or deleted across multiple revisions.
+This **forward-tracking approach** ensures accurate attribution for unchanged and inserted lines across multiple revisions.
+Line moves/reordering may be interpreted as delete+insert operations depending on diff behavior.
 
 ### Example Workflow
 
@@ -205,6 +206,16 @@ cargo test -- --nocapture
 
 # Run specific fixture test
 cargo test test_multiple_revisions_myers -- --nocapture --exact
+```
+
+### Publishing (Maintainers)
+
+```bash
+# Validate publish artifacts without uploading
+cargo xtask publish-dry
+
+# Publish to crates.io
+cargo xtask publish
 ```
 
 ### Test Output Example

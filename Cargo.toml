@@ -1,22 +1,27 @@
 [package]
 name = "blame-rs"
-version = "0.1.7"
+version = "0.1.8"
 description = "Line-by-line authorship tracking for revisioned text"
 authors = ["Levi Laine <shiueo.csh@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/levish0/blame-rs"
 homepage = "https://github.com/levish0/blame-rs"
-documentation = "https://docs.rs/blame"
+documentation = "https://docs.rs/blame-rs"
 readme = "README.md"
 keywords = ["blame", "annotate", "diff", "revision", "git"]
 categories = ["text-processing", "algorithms", "development-tools"]
+exclude = ["xtask/"]
 edition = "2024"
 rust-version = "1.88.0"
 
+[workspace]
+members = ["xtask"]
+resolver = "3"
+
 [dependencies]
 similar = "2.7.0"
-thiserror = "2.0.17"
+thiserror = "2.0.18"
 
 [dev-dependencies]
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.148"
+serde_json = "1.0.149"

@@ -36,6 +36,7 @@ impl<'a, T> Clone for LineOrigin<'a, T> {
 /// # Errors
 ///
 /// Returns `BlameError::EmptyRevisions` if the revisions slice is empty.
+/// Returns `BlameError::InvalidInput` if diff invariants are violated.
 ///
 /// # Example
 ///
@@ -62,7 +63,9 @@ impl<'a, T> Clone for LineOrigin<'a, T> {
 ///
 /// let result = blame(&revisions)?;
 /// ```
-pub fn blame<'a, T>(revisions: &'a [BlameRevision<'a, T>]) -> Result<BlameResult<'a, T>, BlameError> {
+pub fn blame<'a, T>(
+    revisions: &'a [BlameRevision<'a, T>],
+) -> Result<BlameResult<'a, T>, BlameError> {
     blame_with_options(revisions, BlameOptions::default())
 }
 
@@ -81,6 +84,7 @@ pub fn blame<'a, T>(revisions: &'a [BlameRevision<'a, T>]) -> Result<BlameResult
 /// # Errors
 ///
 /// Returns `BlameError::EmptyRevisions` if the revisions slice is empty.
+/// Returns `BlameError::InvalidInput` if diff invariants are violated.
 ///
 /// # Example
 ///
@@ -147,12 +151,20 @@ pub fn blame_with_options<'a, T>(
         for change in diff.iter_all_changes() {
             match change.tag() {
                 ChangeTag::Equal => {
-                    let old_line_num = change
-                        .old_index()
-                        .expect("Equal change must have old_index");
-                    let origin = line_origins
-                        .get(old_line_num)
-                        .expect("old_index should be within line_origins bounds");
+                    let old_line_num = change.old_index().ok_or_else(|| {
+                        BlameError::InvalidInput(format!(
+                            "diff invariant violated: Equal change had no old index at revision {}",
+                            i + 1
+                        ))
+                    })?;
+                    let origin = line_origins.get(old_line_num).ok_or_else(|| {
+                        BlameError::InvalidInput(format!(
+                            "diff invariant violated: old index {} out of bounds (len {}) at revision {}",
+                            old_line_num,
+                            line_origins.len(),
+                            i + 1
+                        ))
+                    })?;
                     new_line_origins.push(origin.clone());
                 }
                 ChangeTag::Insert => {
