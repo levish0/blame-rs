@@ -54,7 +54,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-blame-rs = "0.1.8"
+blame-rs = "0.1.9"
 ```
 
 ### Basic Usage

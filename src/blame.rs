@@ -19,6 +19,10 @@ impl<'a, T> Clone for LineOrigin<'a, T> {
     }
 }
 
+fn iter_lines_preserve_terminator(content: &str) -> impl Iterator<Item = &str> {
+    content.split_inclusive('\n')
+}
+
 /// Performs a blame operation on a sequence of revisions to determine the origin of each line.
 ///
 /// This function takes a slice of `BlameRevision` objects ordered chronologically (oldest to newest)
@@ -112,24 +116,14 @@ pub fn blame_with_options<'a, T>(
 
     let first_revision = &revisions[0];
 
-    let init_diff = TextDiff::configure()
-        .algorithm(similar_algorithm)
-        .diff_lines("", first_revision.content);
-
-    // Pre-allocate capacity based on estimated line count
-    let estimated_lines = first_revision.content.lines().count();
-    let mut line_origins: Vec<LineOrigin<'a, T>> = Vec::with_capacity(estimated_lines);
-
-    // Create shared reference to first revision's metadata
+    let mut line_origins: Vec<LineOrigin<'a, T>> = Vec::new();
     let first_metadata = Rc::clone(&first_revision.metadata);
 
-    for change in init_diff.iter_all_changes() {
-        if change.tag() == ChangeTag::Insert {
-            line_origins.push(LineOrigin {
-                content: change.value(),
-                metadata: Rc::clone(&first_metadata),
-            });
-        }
+    for line in iter_lines_preserve_terminator(first_revision.content) {
+        line_origins.push(LineOrigin {
+            content: line,
+            metadata: Rc::clone(&first_metadata),
+        });
     }
 
     // Forward iteration: track each line's origin through revisions
@@ -144,9 +138,7 @@ pub fn blame_with_options<'a, T>(
             .algorithm(similar_algorithm)
             .diff_lines(old_content, new_content);
 
-        // Pre-allocate based on new content's line count
-        let estimated_new_lines = new_content.lines().count();
-        let mut new_line_origins: Vec<LineOrigin<'a, T>> = Vec::with_capacity(estimated_new_lines);
+        let mut new_line_origins: Vec<LineOrigin<'a, T>> = Vec::with_capacity(line_origins.len());
 
         for change in diff.iter_all_changes() {
             match change.tag() {

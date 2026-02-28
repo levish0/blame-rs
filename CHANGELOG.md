@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.9] - 2026-02-28
+
+### Changed
+- Optimized initial line origin setup by removing the `diff_lines("", first_revision)` bootstrap pass.
+- Reduced per-revision overhead by removing repeated `new_content.lines().count()` scans during blame tracking.
+- Updated README dependency example to `blame-rs = "0.1.9"`.
+
 ## [0.1.8] - 2026-02-13
 
 ### Changed
