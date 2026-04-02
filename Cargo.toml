@@ -1,6 +1,6 @@
 [package]
 name = "blame-rs"
-version = "0.1.9"
+version = "0.1.10"
 description = "Line-by-line authorship tracking for revisioned text"
 authors = ["Levi Laine <shiueo.csh@gmail.com>"]
 license = "MIT"
@@ -19,7 +19,7 @@ members = ["xtask"]
 resolver = "3"
 
 [dependencies]
-similar = "2.7.0"
+similar = "3.0.0"
 thiserror = "2.0.18"
 
 [dev-dependencies]

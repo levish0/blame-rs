@@ -1,7 +1,7 @@
 use crate::types::{
     BlameError, BlameLine, BlameOptions, BlameResult, BlameRevision, DiffAlgorithm,
 };
-use similar::{Algorithm, ChangeTag, TextDiff};
+use similar::{Algorithm, ChangeTag, capture_diff_slices};
 use std::rc::Rc;
 
 #[derive(Debug)]
@@ -114,12 +114,15 @@ pub fn blame_with_options<'a, T>(
         DiffAlgorithm::Patience => Algorithm::Patience,
     };
 
-    let first_revision = &revisions[0];
+    let revision_lines: Vec<Vec<&'a str>> = revisions
+        .iter()
+        .map(|revision| iter_lines_preserve_terminator(revision.content).collect())
+        .collect();
 
-    let mut line_origins: Vec<LineOrigin<'a, T>> = Vec::new();
-    let first_metadata = Rc::clone(&first_revision.metadata);
+    let mut line_origins: Vec<LineOrigin<'a, T>> = Vec::with_capacity(revision_lines[0].len());
+    let first_metadata = Rc::clone(&revisions[0].metadata);
 
-    for line in iter_lines_preserve_terminator(first_revision.content) {
+    for &line in &revision_lines[0] {
         line_origins.push(LineOrigin {
             content: line,
             metadata: Rc::clone(&first_metadata),
@@ -128,44 +131,44 @@ pub fn blame_with_options<'a, T>(
 
     // Forward iteration: track each line's origin through revisions
     for i in 0..revisions.len() - 1 {
-        let old_content = revisions[i].content;
-        let new_content = revisions[i + 1].content;
+        let old_lines = &revision_lines[i];
+        let new_lines = &revision_lines[i + 1];
 
         // Create shared reference to this revision's metadata
         let shared_metadata = Rc::clone(&revisions[i + 1].metadata);
 
-        let diff = TextDiff::configure()
-            .algorithm(similar_algorithm)
-            .diff_lines(old_content, new_content);
+        let diff_ops = capture_diff_slices(similar_algorithm, &old_lines, &new_lines);
 
-        let mut new_line_origins: Vec<LineOrigin<'a, T>> = Vec::with_capacity(line_origins.len());
+        let mut new_line_origins: Vec<LineOrigin<'a, T>> = Vec::with_capacity(new_lines.len());
 
-        for change in diff.iter_all_changes() {
-            match change.tag() {
-                ChangeTag::Equal => {
-                    let old_line_num = change.old_index().ok_or_else(|| {
-                        BlameError::InvalidInput(format!(
-                            "diff invariant violated: Equal change had no old index at revision {}",
-                            i + 1
-                        ))
-                    })?;
-                    let origin = line_origins.get(old_line_num).ok_or_else(|| {
-                        BlameError::InvalidInput(format!(
-                            "diff invariant violated: old index {} out of bounds (len {}) at revision {}",
-                            old_line_num,
-                            line_origins.len(),
-                            i + 1
-                        ))
-                    })?;
-                    new_line_origins.push(origin.clone());
+        for op in &diff_ops {
+            for change in op.iter_changes(old_lines, new_lines) {
+                match change.tag() {
+                    ChangeTag::Equal => {
+                        let old_line_num = change.old_index().ok_or_else(|| {
+                            BlameError::InvalidInput(format!(
+                                "diff invariant violated: Equal change had no old index at revision {}",
+                                i + 1
+                            ))
+                        })?;
+                        let origin = line_origins.get(old_line_num).ok_or_else(|| {
+                            BlameError::InvalidInput(format!(
+                                "diff invariant violated: old index {} out of bounds (len {}) at revision {}",
+                                old_line_num,
+                                line_origins.len(),
+                                i + 1
+                            ))
+                        })?;
+                        new_line_origins.push(origin.clone());
+                    }
+                    ChangeTag::Insert => {
+                        new_line_origins.push(LineOrigin {
+                            content: change.value(),
+                            metadata: Rc::clone(&shared_metadata),
+                        });
+                    }
+                    ChangeTag::Delete => {}
                 }
-                ChangeTag::Insert => {
-                    new_line_origins.push(LineOrigin {
-                        content: change.value(),
-                        metadata: Rc::clone(&shared_metadata),
-                    });
-                }
-                ChangeTag::Delete => {}
             }
         }
 
